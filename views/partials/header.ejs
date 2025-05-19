@@ -1,0 +1,9 @@
+<!-- Thêm vào phần navigation -->
+<% if (user && user.role === 'admin') { %>
+  <li class="nav-item">
+    <a class="nav-link" href="/admin/pending-songs">
+      Quản lý bài hát chờ duyệt
+      <span class="badge bg-warning"><%= pendingCount %></span>
+    </a>
+  </li>
+<% } %> 

@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rules cho collection songs
+    match /songs/{songId} {
+      allow read: if true;  // Ai cũng có thể đọc bài hát
+      allow create: if request.auth != null;  // Chỉ user đã đăng nhập mới tạo được
+      allow update: if 
+        // Cho phép cập nhật nếu là chủ sở hữu hoặc admin
+        (request.auth != null && (request.auth.uid == resource.data.userId || request.auth.uid == 'xKJ5khwgbUerfJaZZCMQbLgPwSE2')) ||
+        // Hoặc nếu chỉ cập nhật trường views (cho phép cả người chưa đăng nhập)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views']);
+      allow delete: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || request.auth.uid == 'xKJ5khwgbUerfJaZZCMQbLgPwSE2');  // Chỉ chủ sở hữu hoặc admin mới xóa được
+      
+      // Thêm rule cho việc duyệt bài
+      allow update: if request.auth != null && 
+        request.auth.uid == 'xKJ5khwgbUerfJaZZCMQbLgPwSE2' && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'adminNote']);
+    }
+    
+    // Rules cho collection users
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;  // Chỉ đọc được document của chính mình
+      allow create: if request.auth != null && request.auth.uid == userId;  // Chỉ tạo được document của chính mình
+      allow update: if request.auth != null && request.auth.uid == userId;  // Chỉ cập nhật được document của chính mình
+      allow delete: if false;  // Không cho phép xóa document users
+    }
+  }
+} 

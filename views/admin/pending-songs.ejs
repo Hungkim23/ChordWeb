@@ -1,0 +1,54 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h2>Quản lý bài hát chờ duyệt</h2>
+  
+  <div class="row">
+    <% songs.forEach(song => { %>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= song.title %></h5>
+            <h6 class="card-subtitle mb-2 text-muted"><%= song.artist %></h6>
+            <p class="card-text">
+              <small class="text-muted">Đăng bởi: <%= song.username %></small>
+            </p>
+            <div class="mt-3">
+              <button class="btn btn-success" onclick="approveSong('<%= song._id %>')">
+                Duyệt bài hát
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</div>
+
+<script>
+async function approveSong(songId) {
+  try {
+    const response = await fetch(`/api/songs/${songId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (response.ok) {
+      // Xóa bài hát khỏi danh sách sau khi duyệt
+      const songElement = document.querySelector(`[data-song-id="${songId}"]`);
+      songElement.remove();
+      alert('Đã duyệt bài hát thành công!');
+    } else {
+      alert('Có lỗi xảy ra khi duyệt bài hát');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Có lỗi xảy ra khi duyệt bài hát');
+  }
+}
+</script>
+
+<%- include('../partials/footer') %> 

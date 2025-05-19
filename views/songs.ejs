@@ -1,0 +1,25 @@
+<!-- Trong danh sách bài hát -->
+<% songs.forEach(song => { %>
+  <div class="song-card">
+    <h3><%= song.title %></h3>
+    <p><%= song.artist %></p>
+    <% if (!song.isApproved) { %>
+      <span class="badge bg-warning">Chờ duyệt</span>
+    <% } %>
+    <!-- ... other song details ... -->
+  </div>
+<% }); %>
+
+<!-- Trang quản lý bài hát chờ duyệt (chỉ admin) -->
+<% if (user && user.role === 'admin') { %>
+  <div class="pending-songs">
+    <h2>Bài hát chờ duyệt</h2>
+    <% pendingSongs.forEach(song => { %>
+      <div class="pending-song-card">
+        <h3><%= song.title %></h3>
+        <p><%= song.artist %></p>
+        <button onclick="approveSong('<%= song._id %>')">Duyệt</button>
+      </div>
+    <% }); %>
+  </div>
+<% } %> 
